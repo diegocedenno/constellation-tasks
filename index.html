@@ -7,6 +7,7 @@
   <meta name="description" content="Lista de tareas donde cada tarea es una estrella: al completarlas se unen en la constelación del día, que queda guardada en un archivo.">
   <meta name="theme-color" content="#0d1117">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <script src="assets/theme.js"></script>
   <link rel="stylesheet" href="assets/tokens.css">
   <link rel="stylesheet" href="style.css">
   <script defer src="assets/starfield.js"></script>
@@ -19,15 +20,21 @@
     <header class="page-head">
       <a class="brand" href="./" aria-label="constellation-tasks, inicio">
         <svg viewBox="0 0 32 32" aria-hidden="true">
-          <path d="M6 24 13 15 20.5 19.5 24.5 10" fill="none" stroke="#c9a27e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          <circle cx="6" cy="24" r="2.3" fill="#e6edf3"/>
-          <circle cx="13" cy="15" r="2.3" fill="#e6edf3"/>
-          <circle cx="20.5" cy="19.5" r="2.3" fill="#e6edf3"/>
-          <path d="M24.5 3.5Q25.2 8.3 30 9Q25.2 9.7 24.5 14.5Q23.8 9.7 19 9Q23.8 8.3 24.5 3.5Z" fill="#e6edf3"/>
+          <path class="brand-link" d="M6 24 13 15 20.5 19.5 24.5 10" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle class="brand-star" cx="6" cy="24" r="2.3"/>
+          <circle class="brand-star" cx="13" cy="15" r="2.3"/>
+          <circle class="brand-star" cx="20.5" cy="19.5" r="2.3"/>
+          <path class="brand-star" d="M24.5 3.5Q25.2 8.3 30 9Q25.2 9.7 24.5 14.5Q23.8 9.7 19 9Q23.8 8.3 24.5 3.5Z"/>
         </svg>
         constellation-tasks
       </a>
       <p class="console" id="status" role="status">estrellas: <b id="count">0/0</b> · <span class="status-long">constelación: </span><b id="status-name">—</b></p>
+      <button type="button" class="theme-toggle" data-theme-toggle role="switch" aria-checked="false" aria-label="Modo claro">
+        <span class="theme-toggle-thumb" aria-hidden="true">
+          <svg class="theme-toggle-moon" viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z" fill="currentColor"/></svg>
+          <svg class="theme-toggle-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.5" fill="currentColor"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </span>
+      </button>
     </header>
 
     <main class="main">
@@ -58,9 +65,9 @@
           <svg class="sky-svg" id="sky" role="group" aria-label="Estrellas de hoy. Flechas para moverse entre ellas, Enter para encender o apagar.">
             <defs>
               <radialGradient id="star-glow">
-                <stop offset="0" stop-color="#c9a27e" stop-opacity="0.55"/>
-                <stop offset="0.4" stop-color="#c9a27e" stop-opacity="0.18"/>
-                <stop offset="1" stop-color="#c9a27e" stop-opacity="0"/>
+                <stop class="glow-core" offset="0" stop-opacity="0.55"/>
+                <stop class="glow-mid" offset="0.4" stop-opacity="0.18"/>
+                <stop class="glow-edge" offset="1" stop-opacity="0"/>
               </radialGradient>
             </defs>
             <g id="links" aria-hidden="true"></g>
@@ -92,7 +99,7 @@
                 <radialGradient id="pluto-light" cx="36%" cy="30%" r="80%">
                   <stop offset="0" stop-color="#ffffff" stop-opacity="0.16"/>
                   <stop offset="0.55" stop-color="#ffffff" stop-opacity="0"/>
-                  <stop offset="1" stop-color="#0d1117" stop-opacity="0.5"/>
+                  <stop class="pluto-shade" offset="1" stop-opacity="0.5"/>
                 </radialGradient>
               </defs>
               <ellipse class="orbit-dashed" cx="80" cy="48" rx="70" ry="30" transform="rotate(-12 80 48)"/>

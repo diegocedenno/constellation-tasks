@@ -1,5 +1,55 @@
 /* constellation-tasks — estilos propios. Los tokens y la base viven en assets/tokens.css */
 
+/* Colores propios con su par oscuro / claro. Una estrella encendida es luz
+   sobre el cielo oscuro y tinta sobre el papel; su halo pasa de brillo a
+   aguada cálida. */
+:root {
+  --spark: var(--rocket);
+  --glow: var(--accent);
+}
+
+:root[data-theme="light"] {
+  --spark: var(--text);
+  --glow: var(--star-warm);
+}
+
+/* ---------- cabecera ---------- */
+
+.brand {
+  flex: none;
+}
+
+.brand-link {
+  stroke: var(--accent);
+}
+
+.brand-star {
+  fill: var(--text);
+}
+
+/* El estado es largo (el nombre admite 28 caracteres). Cuando comparte línea
+   con la marca y el interruptor no salta a otra: se recorta con puntos
+   suspensivos, y en el tramo más justo pierde la palabra "constelación".
+   Por debajo de 640 px ya tiene su propia línea (tokens.css). */
+@media (min-width: 641px) {
+  .page-head {
+    flex-wrap: nowrap;
+  }
+
+  .page-head > .console {
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 780px) {
+  .status-long {
+    display: none;
+  }
+}
+
 .main {
   flex: 1;
   display: flex;
@@ -170,6 +220,17 @@
   fill: var(--text);
 }
 
+/* Sombra del limbo de Plutón: se funde con el fondo en oscuro; sobre papel es
+   una sombra cálida y más leve. */
+.pluto-shade {
+  stop-color: #0d1117;
+}
+
+:root[data-theme="light"] .pluto-shade {
+  stop-color: #5b4330;
+  stop-opacity: 0.38;
+}
+
 .sky-empty-title {
   font-size: var(--fs-lg);
   font-weight: 600;
@@ -250,6 +311,21 @@
   transition: opacity var(--t-slow) var(--ease-out);
 }
 
+/* Degradado del halo (también lo usa el detalle del archivo) */
+.glow-core,
+.glow-mid,
+.glow-edge {
+  stop-color: var(--glow);
+}
+
+:root[data-theme="light"] .glow-core {
+  stop-opacity: 0.34;
+}
+
+:root[data-theme="light"] .glow-mid {
+  stop-opacity: 0.13;
+}
+
 .star-burst {
   fill: none;
   stroke: var(--accent);
@@ -258,7 +334,7 @@
 }
 
 .star-spark {
-  fill: var(--rocket);
+  fill: var(--spark);
   opacity: 0;
   transform: scale(0.2) rotate(45deg);
   transition:
@@ -727,7 +803,7 @@ kbd {
 }
 
 .a-spark {
-  fill: var(--rocket);
+  fill: var(--spark);
 }
 
 .a-label {
@@ -757,9 +833,18 @@ kbd {
   animation: detail-in var(--t-med) var(--ease-out);
 }
 
-/* --bg con transparencia: ::backdrop no hereda las variables en todos los navegadores */
+/* --bg con transparencia: ::backdrop no hereda las variables en todos los
+   navegadores, así que cada tema lleva su color escrito. */
 .detail::backdrop {
   background: rgba(13, 17, 23, 0.8);
+}
+
+:root[data-theme="light"] .detail::backdrop {
+  background: rgba(244, 241, 236, 0.8);
+}
+
+:root[data-theme="light"] .detail {
+  box-shadow: 0 18px 48px rgba(27, 31, 36, 0.16);
 }
 
 @keyframes detail-in {
