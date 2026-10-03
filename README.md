@@ -4,7 +4,9 @@
 >
 > Una lista de tareas donde cada tarea es una estrella: al completarlas se unen en la constelación de tu día, que queda guardada en un archivo de cielos pasados.
 
-![constellation-tasks preview](docs/preview.png)
+**[Live demo · Demo en vivo →](https://diegocedenno.github.io/constellation-tasks/)**
+
+[![constellation-tasks preview](docs/preview.png)](https://diegocedenno.github.io/constellation-tasks/)
 
 **[English](#english)** · **[Español](#español)**
 
