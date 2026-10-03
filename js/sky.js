@@ -60,7 +60,8 @@
 
   // Colocación voraz: cada etiqueta prueba debajo, encima, derecha e izquierda
   // de su estrella y se queda con el primer hueco que no pisa otra etiqueta,
-  // otra estrella ni el borde. Si no hay hueco, no se pinta (devuelve null).
+  // otra estrella ni el borde. Primero busca un hueco que tampoco cruce un
+  // trazo; si no lo hay, acepta cruzarlo. Sin hueco, no se pinta (null).
   function placeLabels(items, frame) {
     var taken = [];
     var half = frame.size * 0.62;
@@ -75,6 +76,7 @@
         { x: item.x + 15, y: item.y, anchor: "start" },
         { x: item.x - 15, y: item.y, anchor: "end" },
       ];
+      var fallback = null;
 
       for (var i = 0; i < options.length; i++) {
         var o = options[i];
@@ -82,11 +84,42 @@
         var box = { x0: x0, x1: x0 + width, y0: o.y - half, y1: o.y + half };
         if (box.x0 < frame.left || box.x1 > frame.right || box.y0 < frame.top || box.y1 > frame.bottom) continue;
         if (overlaps(box, taken) || coversStar(box, items, item)) continue;
-        taken.push(box);
-        return { x: o.x - item.x, y: o.y - item.y, anchor: o.anchor };
+        var spot = { x: o.x - item.x, y: o.y - item.y, anchor: o.anchor, box: box };
+        if (!crossesLine(box, frame.lines)) {
+          taken.push(box);
+          return spot;
+        }
+        fallback = fallback || spot;
       }
-      return null;
+      if (fallback) taken.push(fallback.box);
+      return fallback;
     });
+  }
+
+  // ¿Algún trazo atraviesa la caja? Recorte de Liang–Barsky.
+  function crossesLine(box, lines) {
+    for (var i = 0; i < lines.length; i++) {
+      var s = lines[i];
+      var dx = s.x2 - s.x1;
+      var dy = s.y2 - s.y1;
+      var p = [-dx, dx, -dy, dy];
+      var q = [s.x1 - box.x0, box.x1 - s.x1, s.y1 - box.y0, box.y1 - s.y1];
+      var t0 = 0;
+      var t1 = 1;
+      var inside = true;
+      for (var k = 0; k < 4 && inside; k++) {
+        if (p[k] === 0) {
+          inside = q[k] >= 0;
+        } else {
+          var t = q[k] / p[k];
+          if (p[k] < 0) t0 = Math.max(t0, t);
+          else t1 = Math.min(t1, t);
+          inside = t0 <= t1;
+        }
+      }
+      if (inside) return true;
+    }
+    return false;
   }
 
   function overlaps(box, taken) {
@@ -178,6 +211,14 @@
         view.el.setAttribute("transform", "translate(" + p.x.toFixed(1) + " " + p.y.toFixed(1) + ")");
       });
 
+      var lines = [];
+      for (var key in links) {
+        var link = links[key];
+        link.shape = segment(views[link.a], views[link.b], 11);
+        setLine(link.el, link.shape);
+        lines.push(link.shape);
+      }
+
       // Las encendidas eligen sitio primero; en pantallas estrechas las
       // pendientes no llevan etiqueta fija (aparece al enfocarlas o tocarlas).
       var ranked = list.slice().sort(function (a, b) {
@@ -193,6 +234,7 @@
         top: 66,
         bottom: size.h - 34,
         size: LABEL_SIZE,
+        lines: lines,
       });
       ranked.forEach(function (view, i) {
         var spot = spots[i];
@@ -203,12 +245,6 @@
         view.label.setAttribute("y", spot.y.toFixed(1));
         view.label.setAttribute("text-anchor", spot.anchor);
       });
-
-      for (var key in links) {
-        var link = links[key];
-        link.shape = segment(views[link.a], views[link.b], 11);
-        setLine(link.el, link.shape);
-      }
       showTip();
     }
 
@@ -238,7 +274,7 @@
       var text = truncate(view.task.title, compact ? 30 : 44);
       var width = text.length * TIP_SIZE * 0.6 + 20;
       var x = clamp(view.x - width / 2, 6, Math.max(6, size.w - 6 - width));
-      var below = view.y + 18 + 26 < size.h - 6;
+      var below = view.y + 18 + 26 < size.h - 34; // sin tapar la línea del pie
       var y = below ? view.y + 18 : view.y - 18 - 26;
       tipText.textContent = text;
       tipText.setAttribute("x", (width / 2).toFixed(1));
@@ -485,8 +521,11 @@
 
     var points = fit(stars, w, h, big ? { x: Math.min(90, w * 0.16), y: 46 } : { x: 18, y: 18 });
 
+    var lines = [];
     for (var i = 1; i < points.length; i++) {
-      setLine(node("line", { class: "a-link" }, svg), segment(points[i - 1], points[i], big ? 11 : 5));
+      var shape = segment(points[i - 1], points[i], big ? 11 : 5);
+      setLine(node("line", { class: "a-link" }, svg), shape);
+      lines.push(shape);
     }
 
     points.forEach(function (p) {
@@ -499,7 +538,7 @@
     var items = points.map(function (p, i) {
       return { x: p.x, y: p.y, text: truncate(stars[i].title, w < COMPACT_WIDTH ? 15 : 22) };
     });
-    placeLabels(items, { left: 6, right: w - 6, top: 6, bottom: h - 6, size: LABEL_SIZE }).forEach(function (spot, i) {
+    placeLabels(items, { left: 6, right: w - 6, top: 6, bottom: h - 6, size: LABEL_SIZE, lines: lines }).forEach(function (spot, i) {
       if (!spot) return;
       var text = node("text", { class: "a-label", "dominant-baseline": "central", "text-anchor": spot.anchor }, svg);
       text.setAttribute("x", (items[i].x + spot.x).toFixed(1));
