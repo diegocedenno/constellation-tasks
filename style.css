@@ -1,0 +1,895 @@
+/* constellation-tasks — estilos propios. Los tokens y la base viven en assets/tokens.css */
+
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-5);
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 372px);
+  grid-template-areas: "sky tasks";
+  gap: var(--s-5);
+  height: clamp(400px, calc(100dvh - 376px), 620px);
+}
+
+/* Botón de icono: pequeño a la vista, 44 px al tacto */
+.icon-btn {
+  position: relative;
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-sm);
+  color: var(--text-2);
+  transition: color var(--t-fast) var(--ease-out);
+}
+
+.icon-btn::after {
+  content: "";
+  position: absolute;
+  inset: -7px;
+}
+
+.icon-btn:hover {
+  color: var(--text);
+}
+
+/* ---------- cielo ---------- */
+
+.sky {
+  grid-area: sky;
+  position: relative;
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.sky-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.sky-head {
+  position: absolute;
+  top: var(--s-4);
+  left: var(--s-4);
+  right: var(--s-4);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--s-3);
+  pointer-events: none;
+}
+
+.sky-head > * {
+  pointer-events: auto;
+}
+
+.sky-title {
+  min-width: 0;
+}
+
+.sky-name-row {
+  display: flex;
+  align-items: center;
+  gap: var(--s-1);
+  min-width: 0;
+  height: 30px;
+}
+
+.sky-name {
+  min-width: 0;
+  font-size: 1.25rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sky-name-input {
+  width: min(16rem, 100%);
+  height: 30px;
+  padding: 0 var(--s-2);
+  margin-left: calc(-1 * var(--s-2) - 1px);
+  background: var(--bg);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-ui);
+  font-size: 1.125rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.sky-archive {
+  position: relative;
+  flex: none;
+  min-height: 32px;
+  padding: 0 var(--s-3);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  color: var(--text-2);
+  white-space: nowrap;
+  transition:
+    color var(--t-fast) var(--ease-out),
+    border-color var(--t-fast) var(--ease-out);
+}
+
+.sky-archive:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+/* Toque cómodo sin agrandar el botón a la vista */
+.sky-archive::after {
+  content: "";
+  position: absolute;
+  inset: -6px;
+}
+
+.sky-hint {
+  position: absolute;
+  left: var(--s-4);
+  right: var(--s-4);
+  bottom: var(--s-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: none;
+}
+
+.sky-empty {
+  position: absolute;
+  inset: 76px var(--s-5) var(--s-5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-2);
+  text-align: center;
+  pointer-events: none;
+}
+
+.sky-empty-art {
+  width: 160px;
+  margin-bottom: var(--s-2);
+}
+
+.sky-empty-spark {
+  fill: var(--text);
+}
+
+.sky-empty-title {
+  font-size: var(--fs-lg);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.sky-empty-text {
+  max-width: 36ch;
+  font-size: var(--fs-sm);
+  color: var(--text-2);
+}
+
+/* Trazos de la constelación */
+.link {
+  stroke: var(--accent);
+  stroke-width: 1.25;
+  stroke-linecap: round;
+  opacity: 0.8;
+  transition: opacity 400ms var(--ease-out);
+}
+
+.link.is-leaving,
+.link.is-fading-in {
+  opacity: 0;
+}
+
+/* Estrellas */
+.star {
+  cursor: pointer;
+  outline: none;
+  transition: opacity 400ms var(--ease-out);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.star.is-leaving,
+.star.is-fading-in {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.star-hit {
+  fill: transparent;
+}
+
+/* Solo el círculo de toque recibe el puntero */
+.star-body,
+.star-focus,
+.star-label {
+  pointer-events: none;
+}
+
+.star-body,
+.star-burst,
+.star-dot,
+.star-spark {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.star-ring {
+  fill: none;
+  stroke: var(--border-strong);
+  stroke-width: 1;
+  stroke-dasharray: 1.5 3.8;
+  stroke-linecap: round;
+  transition:
+    opacity var(--t-med) var(--ease-out),
+    stroke var(--t-fast) var(--ease-out);
+}
+
+.star-dot {
+  fill: var(--text-2);
+  transition: fill var(--t-fast) var(--ease-out);
+}
+
+.star-halo {
+  opacity: 0;
+  transition: opacity var(--t-slow) var(--ease-out);
+}
+
+.star-burst {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1.25;
+  opacity: 0;
+}
+
+.star-spark {
+  fill: var(--rocket);
+  opacity: 0;
+  transform: scale(0.2) rotate(45deg);
+  transition:
+    transform 620ms var(--ease-spring),
+    opacity var(--t-med) var(--ease-out);
+}
+
+.star:hover .star-ring,
+.star.is-hot .star-ring {
+  stroke: var(--accent);
+}
+
+.star:hover .star-dot,
+.star.is-hot .star-dot {
+  fill: var(--text);
+}
+
+.star.is-done .star-ring,
+.star.is-done .star-dot {
+  opacity: 0;
+}
+
+.star.is-done .star-spark {
+  opacity: 1;
+  transform: none;
+}
+
+/* Titileo: solo opacity, cada estrella a su ritmo. Con movimiento reducido
+   el bloque global lo detiene y el halo queda fijo y visible. */
+.star.is-done .star-halo {
+  opacity: 1;
+  animation: halo-breathe var(--twinkle, 5s) var(--ease-in-out) var(--delay, 0s) infinite alternate;
+}
+
+.is-paused .star.is-done .star-halo {
+  animation-play-state: paused;
+}
+
+@keyframes halo-breathe {
+  from {
+    opacity: 0.35;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.star-focus {
+  fill: none;
+  stroke: var(--cold);
+  stroke-width: 1.5;
+  opacity: 0;
+  transition: opacity var(--t-fast) var(--ease-out);
+}
+
+.star:focus-visible .star-focus {
+  opacity: 1;
+}
+
+.star.is-hot:not(:focus-visible) .star-focus {
+  stroke: var(--accent);
+  opacity: 0.7;
+}
+
+.star-label {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  fill: var(--text-2);
+  stroke: var(--bg);
+  stroke-width: 4px;
+  stroke-linejoin: round;
+  paint-order: stroke;
+  transition: opacity var(--t-fast) var(--ease-out);
+}
+
+.star.is-done .star-label {
+  fill: var(--text);
+}
+
+.star.is-unlabeled .star-label,
+.star.is-tipped .star-label {
+  opacity: 0;
+}
+
+/* Etiqueta flotante de la estrella enfocada o bajo el cursor */
+.tip {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--t-fast) var(--ease-out);
+}
+
+.tip.is-on {
+  opacity: 1;
+}
+
+.tip rect {
+  fill: var(--surface-2);
+  stroke: var(--border-strong);
+  stroke-width: 1;
+}
+
+.tip text {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  fill: var(--text);
+}
+
+/* ---------- lista ---------- */
+
+.tasks {
+  grid-area: tasks;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+  min-height: 0;
+  padding: var(--s-4);
+}
+
+.tasks-head,
+.archive-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s-3);
+}
+
+.tasks-count,
+.archive-count {
+  font-size: var(--fs-xs);
+  color: var(--text-2);
+}
+
+.tasks-count.is-full {
+  color: var(--accent);
+}
+
+.add {
+  display: flex;
+  gap: var(--s-2);
+}
+
+.add-input {
+  flex: 1;
+  min-width: 0;
+  height: 44px;
+  padding: 0 var(--s-3);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  transition: border-color var(--t-fast) var(--ease-out);
+}
+
+.add-input::placeholder {
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  color: var(--text-2);
+}
+
+.add-input:hover {
+  border-color: var(--border-strong);
+}
+
+.add-btn {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  color: var(--accent-ink);
+  transition: transform var(--t-fast) var(--ease-out);
+}
+
+.add-btn:active {
+  transform: scale(0.94);
+}
+
+.notice {
+  padding: var(--s-2) var(--s-3);
+  background: var(--accent-soft);
+  border-radius: var(--radius-sm);
+  font-size: var(--fs-sm);
+  line-height: 1.45;
+  color: var(--accent);
+}
+
+.task-list {
+  flex: 1;
+  min-height: 0;
+  margin: 0 calc(-1 * var(--s-2));
+  padding: 0;
+  list-style: none;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+.task {
+  display: flex;
+  align-items: center;
+  min-height: 48px;
+  padding: 0 0 0 var(--s-2);
+  border-radius: var(--radius-sm);
+  transition: background-color var(--t-fast) var(--ease-out);
+}
+
+.task.is-hot {
+  background: var(--surface-2);
+}
+
+.task-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  min-height: 48px;
+  cursor: pointer;
+}
+
+.task-check {
+  appearance: none;
+  -webkit-appearance: none;
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  margin: 0;
+  border: 1.5px solid var(--border-strong);
+  border-radius: 50%;
+  cursor: pointer;
+  transition:
+    border-color var(--t-fast) var(--ease-out),
+    background-color var(--t-fast) var(--ease-out);
+}
+
+/* La marca es el mismo destello de cuatro puntas del cielo */
+.task-check::before {
+  content: "";
+  width: 14px;
+  height: 14px;
+  background: var(--accent);
+  clip-path: polygon(50% 0, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0 50%, 40% 40%);
+  opacity: 0;
+  transform: scale(0.2) rotate(45deg);
+  transition:
+    transform var(--t-med) var(--ease-spring),
+    opacity var(--t-fast) var(--ease-out);
+}
+
+.task-check:hover {
+  border-color: var(--accent);
+}
+
+.task-check:checked {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.task-check:checked::before {
+  opacity: 1;
+  transform: none;
+}
+
+.task-check:focus-visible {
+  border-radius: 50%;
+}
+
+.task-title {
+  min-width: 0;
+  padding: var(--s-2) 0;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+  transition: color var(--t-med) var(--ease-out);
+}
+
+.task.is-done .task-title {
+  color: var(--text-2);
+  text-decoration: line-through;
+  text-decoration-color: var(--border-strong);
+}
+
+.task-edit {
+  flex: 1;
+  min-width: 0;
+  height: 36px;
+  padding: 0 var(--s-2);
+  background: var(--bg);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+}
+
+.task-btn {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-sm);
+  color: var(--text-2);
+  transition: color var(--t-fast) var(--ease-out);
+}
+
+.task-btn + .task-btn {
+  margin-left: -8px;
+}
+
+.task-btn:hover {
+  color: var(--text);
+}
+
+.task-btn--danger:hover {
+  color: var(--alert);
+}
+
+.task-btn .i-save,
+.task.is-editing .i-edit {
+  display: none;
+}
+
+.task.is-editing .i-save {
+  display: block;
+  color: var(--accent);
+}
+
+.tasks-empty {
+  flex: 1;
+  font-size: var(--fs-sm);
+  color: var(--text-2);
+}
+
+.task-list:empty {
+  display: none;
+}
+
+kbd {
+  padding: 1px 6px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  color: var(--text);
+}
+
+/* ---------- archivo ---------- */
+
+.archive {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+}
+
+.archive-head h2 {
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(164px, 1fr));
+  gap: var(--s-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: var(--s-2) var(--s-2) var(--s-3);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  text-align: left;
+  transition:
+    border-color var(--t-fast) var(--ease-out),
+    transform var(--t-med) var(--ease-out);
+}
+
+.card:hover {
+  border-color: var(--border-strong);
+  transform: translateY(-2px);
+}
+
+.card.is-fresh {
+  animation: card-in 640ms var(--ease-out) backwards;
+}
+
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+.card-thumb {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  margin-bottom: var(--s-2);
+  background: var(--bg);
+  border-radius: var(--radius-sm);
+}
+
+.card-name {
+  padding: 0 var(--s-1);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-2);
+  padding: 0 var(--s-1);
+  font-size: var(--fs-xs);
+  color: var(--text-2);
+  white-space: nowrap;
+}
+
+.card-stars {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--accent);
+}
+
+.archive-empty {
+  display: flex;
+  align-items: center;
+  gap: var(--s-4);
+  padding: var(--s-4) var(--s-5);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  font-size: var(--fs-sm);
+  color: var(--text-2);
+}
+
+.archive-empty svg {
+  flex: none;
+  color: var(--border-strong);
+}
+
+.archive-empty b {
+  font-weight: 500;
+  color: var(--text);
+}
+
+/* Constelación estática: miniaturas y detalle */
+.a-link {
+  stroke: var(--accent);
+  stroke-width: 1;
+  stroke-linecap: round;
+  opacity: 0.8;
+}
+
+.a-spark {
+  fill: var(--rocket);
+}
+
+.a-label {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  fill: var(--text);
+  stroke: var(--bg);
+  stroke-width: 4px;
+  stroke-linejoin: round;
+  paint-order: stroke;
+}
+
+/* ---------- detalle ---------- */
+
+.detail {
+  width: min(680px, calc(100vw - 2 * var(--s-4)));
+  max-height: calc(100dvh - 2 * var(--s-4));
+  padding: var(--s-5);
+  color: var(--text);
+  overflow-y: auto;
+}
+
+.detail[open] {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+  animation: detail-in var(--t-med) var(--ease-out);
+}
+
+/* --bg con transparencia: ::backdrop no hereda las variables en todos los navegadores */
+.detail::backdrop {
+  background: rgba(13, 17, 23, 0.8);
+}
+
+@keyframes detail-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+.detail-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--s-3);
+}
+
+.detail-title h2 {
+  margin-bottom: var(--s-1);
+  font-size: var(--fs-xl);
+  overflow-wrap: anywhere;
+}
+
+.detail-sky {
+  flex: none;
+  height: 300px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.detail-sky svg {
+  width: 100%;
+  height: 100%;
+}
+
+.detail-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--s-1) var(--s-5);
+  margin: 0;
+  padding: 0 0 0 2.25em;
+  font-size: var(--fs-sm);
+  overflow-wrap: anywhere;
+}
+
+.detail-list li::marker {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  color: var(--accent);
+}
+
+.detail-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+}
+
+.detail-delete {
+  color: var(--text-2);
+}
+
+.detail-delete:hover,
+.detail-delete.is-armed {
+  background: var(--alert-soft);
+  border-color: var(--alert);
+  color: var(--alert);
+}
+
+/* ---------- pantallas estrechas ---------- */
+
+@media (max-width: 860px) {
+  .page {
+    gap: var(--s-4);
+  }
+
+  .main {
+    gap: var(--s-4);
+  }
+
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "sky"
+      "tasks";
+    gap: var(--s-4);
+    height: auto;
+  }
+
+  .sky {
+    height: clamp(300px, 42dvh, 400px);
+  }
+
+  .task-list {
+    overflow-y: visible;
+  }
+
+  .archive-empty {
+    padding: var(--s-4);
+  }
+
+  .detail {
+    padding: var(--s-4);
+  }
+}
+
+@media (max-width: 520px) {
+  .status-long,
+  .sky-meta-long {
+    display: none;
+  }
+
+  .sky-head {
+    top: var(--s-3);
+    left: var(--s-3);
+    right: var(--s-3);
+  }
+
+  .sky-name {
+    font-size: 1.125rem;
+  }
+
+  .sky-hint {
+    left: var(--s-3);
+    right: var(--s-3);
+  }
+
+  .sky-empty-art {
+    width: 132px;
+  }
+}
