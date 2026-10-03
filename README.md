@@ -22,6 +22,7 @@
 - When the date changes — checked on load and when you come back to the tab — yesterday's constellation is archived automatically if it had at least one lit star. Unfinished tasks stay in the new sky. "archivar el día" does the same by hand.
 - The archive is a gallery of SVG thumbnails with date, name and star count. Open one to see it large and read-only, or delete it.
 - Up to 24 tasks per day, with a friendly notice at the limit. Everything survives a reload (`localStorage`).
+- A switch in the header flips between dark and light mode: the same sky redrawn as a star chart on paper, with ink stars joined by sepia lines. The choice is remembered and shared across the Plutón series.
 
 ### What makes it technically interesting
 
@@ -66,6 +67,7 @@ It also works as-is on GitHub Pages.
 - Cuando cambia la fecha —se comprueba al cargar y al volver a la pestaña— la constelación de ayer se archiva sola si tenía al menos una estrella encendida. Las tareas pendientes siguen en el cielo nuevo. "archivar el día" hace lo mismo a mano.
 - El archivo es una galería de miniaturas SVG con fecha, nombre y número de estrellas. Abre una para verla en grande, en solo lectura, o bórrala.
 - Hasta 24 tareas por día, con un aviso amable al llegar al límite. Todo sobrevive a una recarga (`localStorage`).
+- Un interruptor en la cabecera alterna entre modo oscuro y claro: el mismo cielo redibujado como carta estelar sobre papel, con estrellas de tinta unidas por trazos sepia. La elección se recuerda y se comparte entre los proyectos de la serie Plutón.
 
 ### Qué lo hace interesante técnicamente
 
